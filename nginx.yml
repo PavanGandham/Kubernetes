@@ -1,0 +1,28 @@
+#----PORT-ERROR-----#
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    run: testpod1
+  name: testpod1
+spec:
+  containers:
+  - image: nginx:latest
+    name: testpod1
+  - image: sreeharshav/rollingupdate:v1
+    name: rollingupdate1
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    run: testpod1
+  name: testpod1
+spec:
+  containers:
+  - image: nginx:latest
+    name: testpod1
+  - image: httpd:latest
+    name: httpd

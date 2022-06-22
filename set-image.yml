@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    deployment.kubernetes.io/revision: "7"
+    kubectl.kubernetes.io/last-applied-configuration |
+      {"apiVersion":"apps/v1","kind":"Deployment","metadata":{"annotations":{},"labels":{"app":"nginx01"},"name":"nginx01","namespace":"default"},"spec":{"replicas":3,"selector":{"matchLabels":{"app":"nginx01"}},"template":{"metadata":{"labels":{"app":"nginx01"}},"spec":{"containers":[{"image":"pavangandham/music-player-app:v1","name":"rollingupdate"}]}}}}
+    kubernetes.io/change-cause: kubectl set image deployment/nginx01 rollingupdate=sreeharshav/testcontainer:v1      --record=true --dry-run=unchanged --output=yaml
+  creationTimestamp: "2022-06-07T07:16:28Z"
+  generation: 7
+  labels:
+    app: nginx01
+  name: nginx01
+  namespace: default
+  resourceVersion: "21756"
+  uid: 736fbe4b-77fd-4eaa-af58-c254bc155d83
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 3
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: nginx01
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: nginx01
+    spec:
+      containers:
+      - image: sreeharshav/testcontainer:v1
+        imagePullPolicy: IfNotPresent
+        name: rollingupdate
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      terminationGracePeriodSeconds: 30
+status:
+  availableReplicas: 3
+  conditions:
+  - lastTransitionTime: "2022-06-07T07:18:28Z"
+    lastUpdateTime: "2022-06-07T07:18:28Z"
+    message: Deployment has minimum availability.
+    reason: MinimumReplicasAvailable
+    status: "True"
+    type: Available
+  - lastTransitionTime: "2022-06-07T07:16:28Z"
+    lastUpdateTime: "2022-06-07T07:40:20Z"
+    message: ReplicaSet "nginx01-6b77b664dc" has successfully progressed.
+    reason: NewReplicaSetAvailable
+    status: "True"
+    type: Progressing
+  observedGeneration: 7
+  readyReplicas: 3
+  replicas: 3
+  updatedReplicas: 3

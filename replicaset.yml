@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: frontend
+  labels:
+    env: production
+spec:
+  # modify replicas according to your case
+  replicas: 3
+  selector:
+    matchLabels:
+      env: production
+  template:
+    metadata:
+      labels:
+        env: production
+    spec:
+      containers:
+      - name: nginx
+        image: pavangandham/music-player-app:v1

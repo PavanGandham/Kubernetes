@@ -1,0 +1,46 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: nginx01
+  name: nginx01
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: nginx01
+  template:
+    metadata:
+      labels:
+        app: nginx01
+    spec:
+      containers:
+      - image: pavangandham/music-player-app:v1
+        name: rollingupdate
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: nginx002
+    name: nginx002
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: nginx002
+  strategy:
+    type: RollingUpdate 
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: nginx002
+    spec:
+      containers:
+      - image: sreeharshav/testcontainer:v1
+        name: testcontainer

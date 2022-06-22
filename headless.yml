@@ -1,0 +1,15 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: nginx002
+  name: nginx002-headless
+spec:
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 80
+  clusterIP: None
+  selector:
+    app: nginx002

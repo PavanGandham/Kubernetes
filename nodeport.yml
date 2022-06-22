@@ -1,0 +1,35 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: nginx001
+  name: nginx002-nodeport
+spec:
+  ports:
+  - port: 8000
+    protocol: TCP
+    targetPort: 80
+    nodePort: 32000
+  selector:
+    app: nginx001
+  type: NodePort
+
+---
+apiVersion: v1
+kind: Service
+apiVersion: v1
+metadata:
+  labels:
+    app: nginx002
+  name: nginx002-nodeport
+spec:
+  selector:
+    app: nginx002
+  type: NodePort
+  ports:
+  - name: nodeport-expose
+    port:  8080
+    protocol: TCP
+    targetPort: 80
+    nodePort: 31000

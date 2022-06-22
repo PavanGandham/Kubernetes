@@ -1,0 +1,24 @@
+#Exposing service without selectors
+apiVersion: v1
+kind: Service
+metadata:
+  name:  with-out-selector
+spec:
+  ports:
+  - protocol: TCP
+    port:  53
+    targetPort:  53
+
+---
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name:  with-out-selector
+subsets:
+  - addresses:
+      - ip: 8.8.8.8
+    ports:
+      - port:  53
+
+# ku exec -it utils-pod -- bash
+# root@utils-pod:/# telnet with-out-selector.default 53

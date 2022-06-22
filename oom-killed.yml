@@ -1,0 +1,32 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name:  test01
+  labels:
+    run:  test01
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      run: test01
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        run: test01
+    spec:
+      containers:
+      - image:  sreeharshav/stress:256m
+        name:  test01
+        resources:
+          requests:
+            cpu: "10m"
+            memory: "50Mi"
+          limits:
+            memory: "1000Mi"
+            cpu: "500m"

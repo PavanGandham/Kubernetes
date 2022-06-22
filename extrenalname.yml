@@ -1,0 +1,25 @@
+# External name
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-google
+spec:
+  type: ExternalName
+  externalName: www.google.com
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: from-external
+spec:
+  selector:
+    app: nginx002
+  ports:
+    - name:  http
+      protocol: TCP
+      port:  8888
+      targetPort:  80
+  externalIPs:
+    - 54.92.201.213  # Exposing one of the Cluster Node Public IP
