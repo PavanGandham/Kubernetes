@@ -1,0 +1,45 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: node-server
+  name: node-server
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      app: node-server
+  template:
+    metadata:
+      labels:
+        app: node-server
+    spec:
+      containers:
+      - image: sreeharshav/k8s-ambassador-main:v1
+        name: main-container
+        imagePullPolicy: Always
+        resources: {}
+        ports:
+          - containerPort: 9000
+      - image: sreeharshav/k8s-ambassador-ngnix:v2
+        name: ambassador-container
+        imagePullPolicy: Always
+        ports:
+          - containerPort: 3000
+      dnsPolicy: Default
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: node-server
+  labels:
+    run: node-server
+spec:
+  ports:
+  - port: 9000
+    protocol: TCP
+  selector:
+    app: node-server
+  type: NodePort

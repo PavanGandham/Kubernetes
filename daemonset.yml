@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: fluentd-elasticsearch
+  labels:
+    k8s-app: fluentd-logging
+spec:
+  selector:
+    matchLabels:
+      name: fluentd-elasticsearch
+  template:
+    metadata:
+      labels:
+        name: fluentd-elasticsearch
+    spec:
+      containers:
+      - name: fluentd-elasticsearch
+        image: sreeharshav/rollingupdate:v5
+
+
+# ku taint nodes ip-172-20-85-135.ec2.internal deamonset=yes:NoExecute
+# ku taint nodes ip-172-20-44-99.ec2.internal deamonset=yes:NoExecute
+
+# ku taint nodes ip-172-20-85-135.ec2.internal deamonset-
+# ku taint nodes ip-172-20-44-99.ec2.internal deamonset-
+
+# It not possible to remove the deamonset PODs using the ku drain node command. We can evict the deamonset pods by using taints only.
+
+# ku taint node ip-172-20-87-50.ec2.internal error=yes:NoExecute
+# ku taint node ip-172-20-104-64.ec2.internal error=yes:NoExecute
+
+# ku taint node ip-172-20-87-50.ec2.internal error-
+# ku taint node ip-172-20-104-64.ec2.internal error-

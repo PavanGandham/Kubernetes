@@ -1,0 +1,94 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: init-testing
+  name: init-testing
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: init-testing
+  template:
+    metadata:
+      labels:
+        app: init-testing
+    spec:
+      initContainers:
+      - name: init-myservice1
+        image: busybox:1.28
+        command: ['sh', '-c', 'sleep 30']
+      - name: init-myservice2 
+        image: busybox:1.28
+        command: ['sh', '-c', "until nslookup myservice.default.svc.cluster.local; do echo waiting for myservice; sleep 2; done"]
+      - name: fetch
+        image: mwendler/wget
+        command: ["wget","--no-check-certificate","https://sreek8s.s3.amazonaws.com/Sample-SQL-File-1000rows.sql","-O","/docker-entrypoint-initdb.d/dump.sql"]
+        volumeMounts:
+        - mountPath: /docker-entrypoint-initdb.d
+          name: dump
+      containers:
+      - name: mysql
+        image: mysql
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: "India123456"
+        volumeMounts:
+        - mountPath: /docker-entrypoint-initdb.d
+          name: dump
+      volumes:
+      - emptyDir: {}
+        name: dump
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: adminer
+  name: adminer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: adminer
+  template:
+    metadata:
+      labels:
+        app: adminer
+    spec:
+      containers:
+      - image: adminer
+        name: adminer
+        ports:
+        - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: init-testing
+  name: init-testing
+spec:
+  ports:
+  - port: 3306
+    protocol: TCP
+    targetPort: 3306
+  selector:
+    app: init-testing
+---
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    app: adminer
+  name: adminer
+spec:
+  ports:
+  - port: 8080
+    protocol: TCP
+    targetPort: 8080
+    nodePort: 31234
+  selector:
+    app: adminer
+  type: NodePort

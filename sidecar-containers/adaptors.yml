@@ -1,0 +1,98 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    run: nginx01
+  name: nginx01
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      run: nginx01
+  template:
+    metadata:
+      labels:
+        run: nginx01
+    spec:
+      containers:
+        - image: sreeharshav/rollingupdate:v5
+          name: nginx01
+          volumeMounts:
+            - mountPath: /usr/share/nginx/html/
+              name: data
+        - image: sreeharshav/utils
+          name: utils
+          volumeMounts:
+            - mountPath: /data
+              name: data
+          command: ["/bin/bash"]
+          args: ["-c", "for I in {1..100}; do echo \"<h1>Welcome To You for $I Time</h1>\" > /data/index.html; sleep 2; done"]
+      volumes:
+        - name: data
+          emptyDir: {}    
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx01
+spec:
+  selector:
+    run: nginx01
+  ports:
+  - port: 8000
+    targetPort: 80
+  type: NodePort
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: adapter-container-demo
+  labels:
+    env: prod
+spec:
+  initContainers:
+  - name: init-container
+    image: alpine/git
+    command: ["/bin/sh"]
+    args: ["-c", "git clone https://github.com/mavrick202/dockertest1.git /html"]
+    volumeMounts:
+    - name: nginxvol
+      mountPath: /html/    
+  containers:
+  - name: adapter-container
+    image: busybox:1.28
+    command: ["/bin/sh"]
+    args: ["-c", "while true; do echo \\<h1\\>$(date)\\</h1\\> >> /html/index.html; sleep 5;done"]
+    volumeMounts:
+    - name: nginxvol
+      mountPath: /html/
+  - image: nginx:latest
+    name: main-container
+    imagePullPolicy: Always
+    ports:
+      - containerPort: 80
+    volumeMounts:
+    - name: nginxvol
+      mountPath: /usr/share/nginx/html/
+  dnsPolicy: Default
+  volumes:
+  - name: nginxvol
+    emptyDir: {}
+    
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    env: prod
+  name: adapter-container-demo
+spec:
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 80
+  selector:
+    env: prod
+  type: NodePort
