@@ -1,0 +1,9 @@
+# PriorityClass for critical applications
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: critical-apps
+value: 1000
+globalDefault: false
+preemptionPolicy: PreemptLowerPriority
+description: "Priority class for critical applications."
